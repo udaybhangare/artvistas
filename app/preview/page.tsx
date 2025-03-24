@@ -1,0 +1,340 @@
+"use client"
+
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { ArrowRight, Info } from 'lucide-react'
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import VirtualWalkthrough from "./virtual-walkthrough"
+import Link from "next/link"
+
+// Museum types with their respective artworks
+const museums = [
+  {
+    id: "art-museum",
+    name: "Modern Art Gallery",
+    description: "Explore contemporary masterpieces from renowned artists around the world.",
+    image: "/cover/img1.jpg",
+    category: "Art Museum",
+    location: "",
+    artworks: [
+      {
+        id: 1,
+        title: "Abstract Harmony",
+        artist: "Elena Rodriguez",
+        description:
+          "A vibrant exploration of color and form, creating a visual symphony that evokes emotional responses through abstract elements.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 2,
+        title: "Digital Dreams",
+        artist: "Aiden Chen",
+        description:
+          "An AI-assisted artwork that blends traditional painting techniques with digital manipulation, creating a dreamlike landscape that exists between reality and imagination.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 3,
+        title: "Urban Reflections",
+        artist: "Jamal Williams",
+        description:
+          "A photorealistic cityscape that captures the interplay of light and shadow in urban environments, reflecting on the relationship between architecture and human experience.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 4,
+        title: "Eternal Motion",
+        artist: "Sophia Lee",
+        description:
+          "A kinetic sculpture represented in 2D form, exploring themes of perpetual movement and the passage of time through carefully balanced visual elements.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+    ],
+  },
+  {
+    id: "history-museum",
+    name: "Ancient Civilizations Museum",
+    description: "Journey through time and discover the wonders of past civilizations.",
+    image: "/cover/img2.jpg",
+    category: "History Museum",
+    location: "",
+    artworks: [
+      {
+        id: 1,
+        title: "Egyptian Hieroglyphs Tablet",
+        artist: "Unknown (circa 1200 BCE)",
+        description:
+          "A limestone tablet featuring intricate hieroglyphic inscriptions detailing royal decrees from the New Kingdom period.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 2,
+        title: "Roman Mosaic Floor",
+        artist: "Unknown (circa 100 CE)",
+        description:
+          "A beautifully preserved mosaic floor depicting scenes from Roman mythology, showcasing the artistic techniques of ancient Roman craftsmen.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 3,
+        title: "Mayan Calendar Stone",
+        artist: "Unknown (circa 800 CE)",
+        description:
+          "A carved stone calendar that demonstrates the advanced astronomical knowledge of the Mayan civilization.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 4,
+        title: "Samurai Armor Set",
+        artist: "Unknown (circa 1600 CE)",
+        description:
+          "A complete set of traditional Japanese samurai armor, showcasing the craftsmanship and aesthetic principles of feudal Japan.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+    ],
+  },
+  {
+    id: "science-museum",
+    name: "Future Technologies Museum",
+    description: "Discover cutting-edge innovations and scientific breakthroughs shaping our future.",
+    image: "/cover/img3.jpg",
+    category: "Science & Technology Museum",
+    location: "",
+    artworks: [
+      {
+        id: 1,
+        title: "Quantum Computing Visualization",
+        artist: "Dr. Michio Tanaka",
+        description:
+          "An interactive installation visualizing quantum computing principles through light and sound, making complex physics accessible.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 2,
+        title: "Bioprinting Sculpture",
+        artist: "Dr. Sarah Johnson",
+        description:
+          "A sculpture created using bioprinting technology, showcasing the intersection of biology, medicine, and art.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 3,
+        title: "Neural Network Tapestry",
+        artist: "AI Collective",
+        description:
+          "A digital tapestry generated by neural networks, representing the evolution of artificial intelligence through visual patterns.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 4,
+        title: "Space Exploration Timeline",
+        artist: "International Space Agency",
+        description:
+          "A multimedia installation chronicling humanity's journey to the stars, from early rockets to interplanetary missions.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+    ],
+  },
+  {
+    id: "natural-history-museum",
+    name: "Earth's Wonders Museum",
+    description: "Explore the natural history of our planet through fossils, ecosystems, and biodiversity.",
+    image: "/cover/img4.jpg",
+    category: "Natural History Museum",
+    location: "",
+    artworks: [
+      {
+        id: 1,
+        title: "Tyrannosaurus Rex Skeleton",
+        artist: "Nature (68 million years ago)",
+        description:
+          "A complete fossilized skeleton of one of the most fearsome predators to ever walk the Earth, meticulously reconstructed.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 2,
+        title: "Bioluminescent Ocean Diorama",
+        artist: "Marine Biology Team",
+        description:
+          "A lifelike recreation of deep-sea ecosystems featuring bioluminescent organisms, showcasing nature's light show.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 3,
+        title: "Amazonian Rainforest Exhibit",
+        artist: "Environmental Conservation Group",
+        description:
+          "An immersive exhibit recreating the biodiversity of the Amazon rainforest, highlighting its importance to global ecosystems.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+      {
+        id: 4,
+        title: "Evolution of Homo Sapiens",
+        artist: "Anthropology Department",
+        description:
+          "A comprehensive display tracing human evolution through fossils, artifacts, and interactive displays.",
+        image: "/placeholder.svg?height=600&width=400",
+      },
+    ],
+  },
+]
+
+export default function PreviewPage() {
+  const [selectedMuseum, setSelectedMuseum] = useState(null)
+  const [isWalkthroughOpen, setIsWalkthroughOpen] = useState(false)
+  const [museumInfo, setMuseumInfo] = useState(null)
+
+  // This function is no longer needed as we'll use direct navigation
+
+  const openMuseumInfo = (museum) => {
+    setMuseumInfo(museum)
+  }
+
+  const closeMuseumInfo = () => {
+    setMuseumInfo(null)
+  }
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  }
+
+  return (
+    <div className="container py-12 mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-12 text-center"
+      >
+        <h1 className="mb-4 text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r to-purple-400 md:text-5xl from-primary">
+          Explore World-Class Museums
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          Discover extraordinary collections and immerse yourself in virtual walkthroughs of the most prestigious
+          museums around the world.
+        </p>
+      </motion.div>
+
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"
+      >
+        {museums.map((museum) => (
+          <motion.div key={museum.id} variants={item} className="cursor-interactive">
+            <Card className="overflow-hidden h-full transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 group">
+              <div className="overflow-hidden relative h-64">
+                <Image
+                  src={museum.image || "/placeholder.svg"}
+                  alt={museum.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t to-transparent from-black/70" />
+                <div className="absolute bottom-4 left-4">
+                  <Badge className="bg-primary/80 hover:bg-primary">{museum.category}</Badge>
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="absolute top-4 right-4 z-10 text-white hover:bg-black/20"
+                  onClick={() => openMuseumInfo(museum)}
+                >
+                  <Info className="w-5 h-5" />
+                </Button>
+              </div>
+              <CardHeader>
+                <CardTitle className="text-2xl transition-colors group-hover:text-primary">{museum.name}</CardTitle>
+                <CardDescription>{museum.location}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="line-clamp-2">{museum.description}</p>
+              </CardContent>
+              <CardFooter>
+                <Button asChild className="w-full group-hover:bg-primary/90">
+                  <Link href={`/exhibit/${museum.id}`}>
+                    Virtual Walkthrough
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Museum Info Dialog */}
+      <Dialog open={!!museumInfo} onOpenChange={(open) => !open && closeMuseumInfo()}>
+        <DialogContent className="max-w-3xl">
+          {museumInfo && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">{museumInfo.name}</DialogTitle>
+                <DialogDescription>{museumInfo.location}</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-6 py-4">
+                <div className="overflow-hidden relative h-64 rounded-lg">
+                  <Image
+                    src={museumInfo.image || "/placeholder.svg"}
+                    alt={museumInfo.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="mb-2 text-lg font-medium">About this Museum</h3>
+                  <p className="text-muted-foreground">{museumInfo.description}</p>
+                </div>
+                <div>
+                  <h3 className="mb-4 text-lg font-medium">Featured Artworks</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {museumInfo.artworks.map((artwork) => (
+                      <div key={artwork.id} className="space-y-2">
+                        <div className="overflow-hidden relative h-32 rounded-md">
+                          <Image
+                            src={artwork.image || "/placeholder.svg"}
+                            alt={artwork.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium">{artwork.title}</h4>
+                          <p className="text-xs text-muted-foreground">{artwork.artist}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <Button asChild>
+                    <Link href={`/exhibit?id=${museumInfo.id}`}>
+                      Start Virtual Walkthrough
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
