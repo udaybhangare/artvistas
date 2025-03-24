@@ -354,6 +354,7 @@ export default function Home() {
 
           <div className="flex flex-col justify-between items-center pt-8 mt-12 border-t border-border md:flex-row">
             <p className="text-sm text-muted-foreground">© 2025 ArtVistas. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">© Developed by Uday and Yuvraj</p>
             <div className="flex mt-4 space-x-4 md:mt-0">
               <Button variant="ghost" size="icon" className="rounded-full">
                 <svg
