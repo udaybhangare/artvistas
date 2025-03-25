@@ -144,7 +144,7 @@ function MuseumRoom() {
       }
     }
 
-    animateCamera()
+    //animateCamera()
   }
 
   const closeArtworkDetails = () => {
