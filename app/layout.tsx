@@ -23,6 +23,7 @@ export default function RootLayout({
       <body className={geist.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
+          <ArtGuideChatbot />
         </ThemeProvider>
       </body>
     </html>
@@ -32,3 +33,4 @@ export default function RootLayout({
 
 
 import './globals.css'
+import ArtGuideChatbot from "@/components/art-guide-chatbot"
